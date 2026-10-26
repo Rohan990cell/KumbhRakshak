@@ -1,0 +1,291 @@
+// Prisma schema for KumbhRakshak (Kumbh Mela Emergency Alert System)
+// Default provider is SQLite for instant zero-dependency local execution.
+// To use PostgreSQL, set provider = "postgresql" and DATABASE_URL in .env
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique // CONTROL_ROOM, FIELD_STAFF, EMERGENCY_SERVICES, PILGRIM, ADMIN
+  label       String
+  description String?
+  permissions String   // JSON string of allowed actions
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model User {
+  id               String            @id @default(uuid())
+  email            String            @unique
+  passwordHash     String
+  name             String
+  phone            String?
+  department       String?
+  roleId           String
+  role             Role              @relation(fields: [roleId], references: [id])
+  isActive         Boolean           @default(true)
+  acknowledgements Acknowledgement[]
+  auditLogs        AuditLog[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model Zone {
+  id              String         @id @default(uuid())
+  code            String         @unique // e.g. ZONE-SANGAM, ZONE-GATE1
+  name            String         // Sangam Ghat, Main Entry Gate, Sector 1, etc.
+  description     String?
+  capacity        Int            @default(15000)
+  currentCrowd    Int            @default(0)
+  density         Float          @default(0.0) // Percentage (0-100)
+  riskLevel       String         @default("LOW") // LOW, MODERATE, HIGH, CRITICAL
+  riskScore       Float          @default(10.0) // 0 - 100
+  status          String         @default("NORMAL") // NORMAL, CAUTION, RESTRICTED, EMERGENCY
+  latitude        Float
+  longitude       Float
+  boundaryPoints  String?        // JSON string of polygon coordinates
+  inflowRate      Int            @default(120) // persons/min
+  outflowRate     Int            @default(100) // persons/min
+  movementDirection String       @default("EAST_TO_GHAT")
+  crowdHistory    CrowdData[]
+  sensors         Sensor[]
+  cctvs           CCTV[]
+  alerts          Alert[]
+  incidents       Incident[]
+  emergencyTeams  EmergencyTeam[]
+  emergencyUnits  EmergencyUnit[]
+  locations       Location[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model CrowdData {
+  id              String   @id @default(uuid())
+  zoneId          String
+  zone            Zone     @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  timestamp       DateTime @default(now())
+  crowdCount      Int
+  densityPercent  Float
+  inflowRate      Int
+  outflowRate     Int
+  netFlow         Int
+  riskScore       Float
+  riskLevel       String
+  source          String   @default("CCTV_AI_ANALYSIS") // CCTV_AI_ANALYSIS, IOT_SENSOR, MANUAL_OVERRIDE
+}
+
+model Sensor {
+  id           String    @id @default(uuid())
+  sensorCode   String    @unique
+  name         String
+  type         String    // INFRARED_BEAM, BLUETOOTH_BEACON, RFID_GATE, DRONE_COUNTER
+  zoneId       String
+  zone         Zone      @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  status       String    @default("ACTIVE") // ACTIVE, INACTIVE, MAINTENANCE
+  batteryLevel Int       @default(95)
+  lastReading  Float?
+  latitude     Float
+  longitude    Float
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model CCTV {
+  id             String   @id @default(uuid())
+  cameraCode     String   @unique
+  name           String
+  zoneId         String
+  zone           Zone     @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  streamUrl      String?
+  status         String   @default("ONLINE") // ONLINE, OFFLINE, WARNING
+  resolution     String   @default("4K-HDR")
+  crowdEstimate  Int      @default(0)
+  densityPercent Float    @default(0.0)
+  riskLevel      String   @default("LOW")
+  latitude       Float
+  longitude      Float
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model WeatherData {
+  id             String   @id @default(uuid())
+  timestamp      DateTime @default(now())
+  temperature    Float    // Celsius
+  humidity       Float    // %
+  rainMm         Float    // mm
+  windSpeedKmh   Float    // km/h
+  condition      String   // Clear, Humid, Rain, Thunderstorm, Foggy
+  weatherRisk    String   // LOW, MODERATE, HIGH, SEVERE
+  heatIndex      Float    // Celsius
+  visibilityKm   Float    @default(6.0)
+}
+
+model Alert {
+  id                String            @id @default(uuid())
+  alertCode         String            @unique // e.g. ALT-2026-001
+  title             String
+  description       String
+  type              String            // Overcrowding, Stampede Risk, Medical Emergency, Fire, Missing Person, Weather Emergency, Blocked Route, Suspicious Activity, Infrastructure Failure, User Report
+  severity          String            // INFO, WARNING, HIGH, CRITICAL
+  zoneId            String?
+  zone              Zone?             @relation(fields: [zoneId], references: [id], onDelete: SetNull)
+  locationText      String
+  crowdCount        Int?
+  densityPercent    Float?
+  riskScore         Float?
+  status            String            @default("NEW") // NEW, ACKNOWLEDGED, ASSIGNED, IN_PROGRESS, RESOLVED
+  assignedTeamId    String?
+  assignedTeam      EmergencyTeam?    @relation(fields: [assignedTeamId], references: [id], onDelete: SetNull)
+  recommendedAction String?
+  acknowledgedBy    String?
+  acknowledgedAt    DateTime?
+  resolvedAt        DateTime?
+  acknowledgements  Acknowledgement[]
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+}
+
+model Incident {
+  id               String            @id @default(uuid())
+  incidentCode     String            @unique // e.g. INC-2026-001
+  title            String
+  description      String
+  category         String            // Medical, Fire, Crowd Surge, Lost Person, Structural, Law and Order
+  severity         String            // LOW, MEDIUM, HIGH, CRITICAL
+  status           String            @default("REPORTED") // REPORTED, VERIFIED, ASSIGNED, IN_PROGRESS, RESOLVED
+  zoneId           String?
+  zone             Zone?             @relation(fields: [zoneId], references: [id], onDelete: SetNull)
+  locationText     String
+  latitude         Float
+  longitude        Float
+  imageUrl         String?
+  reportedBy       String?           // Public / Control Room / Field Staff
+  assignedUnitId   String?
+  assignedUnit     EmergencyUnit?    @relation(fields: [assignedUnitId], references: [id], onDelete: SetNull)
+  assignedTeamId   String?
+  assignedTeam     EmergencyTeam?    @relation(fields: [assignedTeamId], references: [id], onDelete: SetNull)
+  responseNotes    String?
+  reportedAt       DateTime          @default(now())
+  verifiedAt       DateTime?
+  inProgressAt     DateTime?
+  resolvedAt       DateTime?
+  acknowledgements Acknowledgement[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model Notification {
+  id            String   @id @default(uuid())
+  title         String
+  message       String
+  category      String   // Critical Alert, Warning, Incident Update, Team Assignment, Weather Warning, Public Announcement
+  severity      String   // INFO, WARNING, HIGH, CRITICAL
+  recipientRole String   @default("ALL") // ALL, CONTROL_ROOM, FIELD_STAFF, EMERGENCY_SERVICES, PILGRIM
+  isRead        Boolean  @default(false)
+  linkUrl       String?
+  createdAt     DateTime @default(now())
+}
+
+model EmergencyTeam {
+  id                 String            @id @default(uuid())
+  teamCode           String            @unique // e.g. RAPID-RESPONSE-1
+  name               String            // Quick Response Team Alpha
+  leaderName         String
+  contactPhone       String
+  department         String            // Disaster Management, Police, Volunteer Core
+  status             String            @default("AVAILABLE") // AVAILABLE, ASSIGNED, EN_ROUTE, ON_SCENE, OFF_DUTY
+  zoneId             String?
+  zone               Zone?             @relation(fields: [zoneId], references: [id], onDelete: SetNull)
+  latitude           Float
+  longitude          Float
+  membersCount       Int               @default(6)
+  alerts             Alert[]
+  incidents          Incident[]
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+}
+
+model EmergencyUnit {
+  id              String     @id @default(uuid())
+  unitCode        String     @unique // e.g. AMBULANCE-07, POLICE-PATROL-04
+  name            String
+  type            String     // AMBULANCE, POLICE, FIRE_BRIGADE, DISASTER_RESPONSE
+  vehicleNumber   String
+  status          String     @default("AVAILABLE") // AVAILABLE, BUSY, DISPATCHED, MAINTENANCE
+  zoneId          String?
+  zone            Zone?      @relation(fields: [zoneId], references: [id], onDelete: SetNull)
+  latitude        Float
+  longitude       Float
+  distanceKm      Float      @default(0.8)
+  contactNumber   String
+  incidents       Incident[]
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+}
+
+model UserReport {
+  id                 String    @id @default(uuid())
+  reportCode         String    @unique // e.g. REP-9842
+  reporterName       String    @default("Anonymous Pilgrim")
+  reporterPhone      String?
+  emergencyType      String    // Overcrowding, Medical, Lost Child/Elder, Fire, Obstruction, Suspicious Item
+  location           String
+  description        String
+  imageUrl           String?
+  priority           String    @default("HIGH") // LOW, MEDIUM, HIGH, CRITICAL
+  status             String    @default("SUBMITTED") // SUBMITTED, VERIFIED, ESCALATED, RESOLVED, REJECTED
+  latitude           Float?
+  longitude          Float?
+  verifiedIncidentId String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+model Acknowledgement {
+  id          String    @id @default(uuid())
+  alertId     String?
+  alert       Alert?    @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  incidentId  String?
+  incident    Incident? @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  userId      String?
+  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  role        String
+  actionTaken String    // ACKNOWLEDGED, EN_ROUTE, ON_SCENE, RESOLVED, REJECTED
+  notes       String?
+  timestamp   DateTime  @default(now())
+}
+
+model Location {
+  id          String   @id @default(uuid())
+  name        String
+  type        String   // MEDICAL_CAMP, POLICE_POST, FIRE_STATION, EMERGENCY_EXIT, SANGAM_POINT, LOST_FOUND_BOOTH, HELPLINE_DESK
+  zoneId      String?
+  zone        Zone?    @relation(fields: [zoneId], references: [id], onDelete: SetNull)
+  latitude    Float
+  longitude   Float
+  description String?
+  contactInfo String?
+  icon        String?
+  createdAt   DateTime @default(now())
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  action      String   // LOGIN, ALERT_GENERATED, STATUS_CHANGED, UNIT_DISPATCHED, SIMULATION_TRIGGERED
+  entityType  String   // Alert, Incident, Zone, Simulation, User
+  entityId    String?
+  performedBy String   // User email or SYSTEM
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  details     String?  // JSON string
+  timestamp   DateTime @default(now())
+}

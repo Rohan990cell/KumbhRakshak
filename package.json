@@ -1,0 +1,19 @@
+{
+  "name": "kumbhrakshak-project",
+  "version": "1.0.0",
+  "description": "KumbhRakshak - Kumbh Mela Management & Emergency Alert System (College PBL Project)",
+  "scripts": {
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,green\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:ml": "cd ml-service && python -m uvicorn app.main:app --port 8000 --reload",
+    "install:all": "npm install && npm install --prefix backend && npm install --prefix frontend",
+    "seed": "npm run prisma:seed --prefix backend",
+    "db:push": "npm run prisma:push --prefix backend",
+    "build:frontend": "npm run build --prefix frontend",
+    "build:backend": "npm run build --prefix backend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

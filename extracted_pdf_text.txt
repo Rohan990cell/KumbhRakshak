@@ -1,0 +1,291 @@
+=== PAGE 1 ===
+Kumbh Mela
+Managemen
+t
+Emergency Alert 
+System
+PBL Project
+Computer Science & Design
+Real-time monitoring • Risk detection • Automated alerts • Coordinated response
+
+=== PAGE 2 ===
+Abstract 2
+Project Abstract
+Kumbh Mela is a large-scale religious gathering where huge crowds can create 
+challenges related to congestion, medical emergencies, adverse weather and disaster 
+response. The proposed Kumbh Mela Management – Emergency Alert System 
+provides a real-time framework for monitoring and early warning.
+The system collects data from CCTV cameras, weather APIs, GPS/location services, 
+user reports and IoT sensors. Real-time processing and AI/ML-based crowd-density 
+and risk analysis are used to identify potentially unsafe situations. When a risk is 
+detected, alerts are generated and delivered through a control-room dashboard, 
+mobile app, SMS and other channels.
+An alert database stores incidents and supports acknowledgement and feedback from 
+field teams and authorities, enabling faster coordination and continuous monitoring.
+Real-time Monitoring
+Continuous collection of crowd, location 
+and environmental data.
+AI/ML Risk Analysis
+Crowd-density analysis, risk prediction 
+and alert generation.
+Multi-channel Alerts
+Dashboard, mobile app, SMS/push 
+notifications and siren.
+Response Coordination
+Authorities, field staff, pilgrims and 
+emergency services.
+PBL • Computer Science & Design
+
+=== PAGE 3 ===
+Problem Statement & Objectives 3
+Problem Statement
+Large temporary crowds can change rapidly. Manual 
+monitoring may delay the detection, verification and 
+communication of risks. A centralized system is needed to 
+combine live information and support timely emergency 
+decisions.
+Objectives
+• Collect data from multiple live sources
+• Detect crowd and environmental risks
+• Generate automated alerts
+• Notify relevant stakeholders quickly
+• Record alerts, acknowledgement and updates
+Data Collection
+CCTV • Weather API • GPS • User 
+reports • IoT sensors
+Risk Processing
+Real-time stream processing + AI/ML 
+risk analysis
+Emergency Response
+Dashboard + mobile + SMS + 
+emergency-service communication
+PBL • Computer Science & Design
+
+=== PAGE 4 ===
+System Architecture 4
+System architecture provided for the proposed PBL system
+
+=== PAGE 5 ===
+
+
+=== PAGE 6 ===
+
+
+=== PAGE 7 ===
+Data Flow Diagram (DFD) 5
+Data flow: collection → processing → alert generation → delivery → acknowledgement
+
+=== PAGE 8 ===
+System Workflow 6
+1. Collect Data
+CCTV, weather, GPS, user reports and IoT sensors provide 
+live inputs.
+2. Process & Analyse
+AI/ML and real-time processing evaluate crowd density 
+and risk.
+3. Detect Risk
+If risk crosses defined conditions, the system generates 
+an alert.
+4. Notify & Continue
+Store alert → notify stakeholders → capture 
+acknowledgement → continue monitoring.
+PBL • Computer Science & Design
+
+=== PAGE 9 ===
+Literature Survey — 3 Research Papers 7
+# Paper Title Author(s) Year Technology / Method Key Result Limitation / Gap
+1 Managing Crowds with Technology: 
+Cases of Hajj and Kumbh Mela
+Mohammad Yamin 2019 RFID, sensors, wireless & mobile 
+technologies
+Technology-assisted framework 
+for crowd monitoring and 
+disaster response.
+Discusses technologies and cases; not a single integrated end-
+to-end alert implementation.
+2 Integration of Image Processing and 
+Crowd Simulation for Understanding 
+Crowd Dynamics in Kumbh Mela
+Karthika P. S.; Ashish 
+Verma; Subhadeep Pal
+2020 Image processing, Social Force 
+Model, crowd simulation, heat map
+Average image-processing 
+accuracy of 73.45%; crowd-risk 
+heat map generated.
+Focuses on crowd analysis/simulation; alert delivery is not the 
+main focus.
+3 Spatial Strategies for Crowd 
+Management in Haridwar, India
+Sindhuja Kasthala; Binoy 
+B.V.; Harshit S. Lakra
+2019 GIS, remote sensing, spatial & 
+crowd-flow analysis
+Analyses crowd routes, 
+infrastructure and emergency 
+preparedness for Ardh Kumbh 
+Mela 2016.
+Planning/spatial focus; lacks continuous real-time monitoring 
+and automated alerts.
+PBL • Computer Science & Design
+
+=== PAGE 10 ===
+Literature Survey — Paper 1 8
+Managing Crowds with Technology: Cases of Hajj and Kumbh Mela
+Mohammad Yamin • International Journal of Information Technology • 2019 • DOI: 10.1007/s41870-
+018-0266-1
+Technology / Method
+RFID, sensors, wireless networks, mobile 
+technologies, distributed/fog-style 
+processing and crowd-management 
+concepts.
+Result
+Highlights technology-supported 
+monitoring and communication for large 
+crowds and disaster prevention.
+Limitation
+Presents technology and case-based 
+approaches rather than one complete 
+end-to-end Kumbh emergency alert 
+system.
+Relevance to Our Project
+Supports our use of multiple sensing/communication technologies and rapid information exchange for large-event safety.
+PBL • Computer Science & Design
+
+=== PAGE 11 ===
+Literature Survey — Paper 2 9
+Integration of Image Processing and Crowd Simulation for Understanding Crowd Dynamics in Kumbh Mela
+Karthika P. S., Ashish Verma & Subhadeep Pal • Transportation Research Procedia • 2020 • DOI: 10.1016/j.trpro.2020.08.229
+Technology / Method
+Image processing, pedestrian detection, 
+Social Force Model, crowd simulation 
+and risk heat-map generation.
+Result
+Pedestrian inflow from image processing 
+was fed into simulation; average image-
+processing accuracy was 73.45%.
+Limitation
+Accuracy is not perfect and the work 
+focuses mainly on analysis/simulation 
+rather than multi-channel emergency 
+alert delivery.
+Relevance to Our Project
+Directly supports the CCTV → crowd analysis → risk detection part of our proposed architecture.
+PBL • Computer Science & Design
+
+=== PAGE 12 ===
+Literature Survey — Paper 3 10
+Spatial Strategies for Crowd Management in Haridwar, India
+Sindhuja Kasthala, Binoy B.V. & Harshit S. Lakra • 2019 • DOI: 10.23953/cloud.ijacear.421
+Technology / Method
+GIS, remote sensing, spatial analysis, 
+crowd-flow analysis and emergency-
+route/infrastructure assessment.
+Result
+Examines crowd-management and 
+emergency-preparedness strategies for 
+Ardh Kumbh Mela 2016 in Haridwar.
+Limitation
+Primarily spatial/planning based; 
+continuous live monitoring and 
+automated alerting are not the central 
+focus.
+Relevance to Our Project
+Supports GPS/location, mapping, crowd-flow and emergency-route/resource-management components.
+PBL • Computer Science & Design
+
+=== PAGE 13 ===
+Research Gap 11
+What Existing Research Covers
+• Crowd-management technologies
+• CCTV / image-based crowd analysis
+• Crowd simulation and risk heat maps
+• GIS and spatial planning
+• Sensors and wireless/mobile communication
+• Emergency preparedness and route planning
+Identified Gap
+There is a need for an integrated framework that combines:
+• Multiple real-time data sources
+• Continuous risk analysis
+• Automated alert generation
+• Multi-channel emergency communication
+• Alert acknowledgement and feedback
+• Centralized control-room monitoring
+Research Gap: moving from separate monitoring/analysis approaches toward an integrated real-time emergency alert & response 
+framework.
+PBL • Computer Science & Design
+
+=== PAGE 14 ===
+Proposed System — How It Addresses the Gap 12
+1. Multiple data sources
+CCTV + weather + GPS + user reports + IoT
+2. Real-time processing
+Streaming data is processed continuously for risk analysis
+3. Risk detection
+AI/ML supports crowd-density analysis, prediction and alert generation
+4. Multi-channel alerts
+Dashboard + mobile app + SMS/push + siren to relevant stakeholders
+5. Feedback loop
+Alert logs, acknowledgement and field updates support continuous monitoring
+PBL • Computer Science & Design
+
+=== PAGE 15 ===
+Proposed Gantt Chart 13
+W1
+ W2
+ W3
+ W4
+ W5
+ W6
+ W7
+ W8
+Literature survey
+Requirement analysis
+System design
+Data/ML module
+Application & alerts
+Integration
+Testing & evaluation
+Documentation & PPT
+Note
+Timeline can be adjusted to your actual PBL semester schedule.PBL • Computer Science & Design
+
+=== PAGE 16 ===
+Conclusion 14
+Key Takeaway
+The proposed system combines real-time data collection, risk analysis and coordinated alerts into a single emergency-management 
+workflow for Kumbh Mela.
+Early detection
+Continuous monitoring can help identify potentially unsafe crowd or 
+environmental conditions.
+Faster communication
+Automated multi-channel alerts can reduce the delay between risk 
+detection and notification.
+Better coordination
+A shared dashboard and acknowledgement mechanism can support 
+authorities and field teams.
+Scalable framework
+The layered architecture can be extended with additional sensors, 
+models, services and emergency resources.
+PBL • Computer Science & Design
+
+=== PAGE 17 ===
+References 15
+Yamin, M. (2019). Managing crowds with technology: cases of Hajj and Kumbh Mela. International Journal of 
+Information Technology, 11(2), 229–237. DOI: 10.1007/s41870-018-0266-1.
+Karthika P. S., Verma, A., & Pal, S. (2020). Integration of image processing and crowd simulation for 
+understanding crowd dynamics in Kumbh Mela. Transportation Research Procedia, 48, 2906–2915. DOI: 
+10.1016/j.trpro.2020.08.229.
+Kasthala, S., B.V., B., & Lakra, H. S. (2019). Spatial Strategies for Crowd Management in Haridwar, India. 
+International Journal of Advanced Civil Engineering and Architecture Research, 5(1), 100–113. DOI: 
+10.23953/cloud.ijacear.421.
+Proposed system architecture, DFD and workflow: PBL project design.
+Verified Research Sources
+Paper metadata and abstracts were checked against publisher/indexed sources.
+PBL • Computer Science & Design
+
+=== PAGE 18 ===
+Thank You!
+Kumbh Mela Management – Emergency Alert System
+Questions & Discussion
+PBL • Computer Science & Design
