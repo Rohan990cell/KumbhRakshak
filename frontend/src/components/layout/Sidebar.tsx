@@ -85,7 +85,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="px-1">
           <button
             onClick={onToggleSimulator}
-            className={`w-full py-2.5 px-3 rounded-lg text-xs font-bold flex items-center justify-between transition shadow-lg ${
+            className={`w-full py-2.5 px-3 rounded-lg text-xs font-bold flex items-center justify-between transition shadow-lg cursor-pointer ${
               simulatorOpen
                 ? 'bg-gradient-to-r from-red-600 to-amber-600 text-white border border-red-400'
                 : 'bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-600 hover:to-indigo-600 text-amber-200 border border-blue-500/40'
@@ -114,7 +114,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <button
                   key={item.path}
                   onClick={() => onNavigate(item.path)}
-                  className={`w-full flex items-center justify-between px-3 py-2 text-xs rounded-md transition font-medium text-left ${
+                  className={`w-full flex items-center justify-between px-3 py-2 text-xs rounded-md transition font-medium text-left cursor-pointer ${
                     isActive
                       ? 'bg-blue-600 text-white font-bold shadow-md'
                       : 'text-slate-300 hover:bg-slate-800/80 hover:text-slate-100'
@@ -151,11 +151,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Footer Info */}
       <div className="p-3 bg-[#080D18] border-t border-slate-800/80 text-[11px] text-slate-400">
         <div className="flex items-center justify-between text-slate-400 font-mono text-[10px]">
-          <span>PRISMA • SQLITE</span>
-          <span className="text-emerald-400">SOCKET.IO ONLINE</span>
+          <span>DEMO STORE (LOCAL)</span>
+          <span className="text-emerald-400 flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            ACTIVE
+          </span>
         </div>
-        <div className="text-[10px] text-slate-500 mt-1 truncate">
-          Active Role: <span className="text-slate-300 font-medium">{user?.role || 'Guest'}</span>
+        <div className="text-[10px] text-slate-400 mt-1 truncate">
+          Active Role: <span className="text-amber-300 font-semibold">{user?.role || 'Guest'}</span>
         </div>
       </div>
     </aside>

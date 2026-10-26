@@ -10,16 +10,15 @@ import {
   LogOut,
   ChevronDown,
   CheckCircle2,
-  AlertTriangle,
   Flame,
-  Activity
 } from 'lucide-react';
 
 interface HeaderProps {
   onOpenNotifications?: () => void;
+  onNavigate?: (path: string) => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
+export const Header: React.FC<HeaderProps> = ({ onOpenNotifications, onNavigate }) => {
   const { user, logout, switchRoleQuick } = useAuth();
   const { activeAlerts, criticalAlertCount } = useAlerts();
   const [time, setTime] = useState<string>('');
@@ -46,24 +45,38 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const rolesList: { role: RoleType; label: string; badgeColor: string }[] = [
-    { role: 'CONTROL_ROOM', label: 'Control Room / Authority', badgeColor: 'bg-blue-900/60 text-blue-300 border-blue-700' },
-    { role: 'FIELD_STAFF', label: 'Field Staff / Magistrate', badgeColor: 'bg-emerald-900/60 text-emerald-300 border-emerald-700' },
-    { role: 'EMERGENCY_SERVICES', label: 'Emergency Services (108/112/NDRF)', badgeColor: 'bg-red-900/60 text-red-300 border-red-700' },
-    { role: 'PILGRIM', label: 'Pilgrim / Public Portal', badgeColor: 'bg-amber-900/60 text-amber-300 border-amber-700' },
-    { role: 'ADMIN', label: 'System Administrator', badgeColor: 'bg-purple-900/60 text-purple-300 border-purple-700' },
+  const rolesList: { role: RoleType; label: string; path: string }[] = [
+    { role: 'CONTROL_ROOM', label: 'Command Center Authority', path: '/dashboard' },
+    { role: 'FIELD_STAFF', label: 'Sector 1 Magistrate / Inspector', path: '/field-team' },
+    { role: 'EMERGENCY_SERVICES', label: '108 Ambulance / Police Unit', path: '/emergency-services' },
+    { role: 'PILGRIM', label: 'Devotee / Citizen Public App', path: '/public' },
+    { role: 'ADMIN', label: 'System Administrator', path: '/admin/settings' },
   ];
+
+  const handleRoleSelect = (role: RoleType, path: string) => {
+    switchRoleQuick(role);
+    setRoleMenuOpen(false);
+    if (onNavigate) {
+      onNavigate(path);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 bg-[#0B132B]/95 backdrop-blur-md border-b border-slate-700/80 px-4 lg:px-6 py-2.5 flex items-center justify-between text-slate-100 shadow-xl">
       {/* Brand & Emblem */}
       <div className="flex items-center gap-3.5">
-        <div className="flex items-center justify-center w-11 h-11 rounded-lg bg-gradient-to-br from-blue-700 to-slate-900 border border-amber-500/40 shadow-inner">
+        <div
+          onClick={() => onNavigate && onNavigate('/dashboard')}
+          className="flex items-center justify-center w-11 h-11 rounded-lg bg-gradient-to-br from-blue-700 to-slate-900 border border-amber-500/40 shadow-inner cursor-pointer"
+        >
           <ShieldAlert className="w-6 h-6 text-amber-400 drop-shadow" />
         </div>
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="font-extrabold text-lg lg:text-xl tracking-wide bg-gradient-to-r from-amber-400 via-amber-200 to-white bg-clip-text text-transparent">
+            <h1
+              onClick={() => onNavigate && onNavigate('/dashboard')}
+              className="font-extrabold text-lg lg:text-xl tracking-wide bg-gradient-to-r from-amber-400 via-amber-200 to-white bg-clip-text text-transparent cursor-pointer"
+            >
               KumbhRakshak
             </h1>
             <span className="hidden sm:inline-block text-[10px] font-semibold tracking-wider px-2 py-0.5 rounded bg-blue-950 border border-blue-600/50 text-blue-300 uppercase">
@@ -71,7 +84,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
             </span>
           </div>
           <p className="text-xs text-slate-400 hidden sm:block font-medium">
-            Kumbh Mela Emergency Command Center • Prayagraj
+            Kumbh Mela Emergency Alert System • Prayagraj Prototype
           </p>
         </div>
       </div>
@@ -84,12 +97,15 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
           </span>
-          <span className="font-semibold tracking-wide">LIVE 24x7 MONITORING</span>
+          <span className="font-semibold tracking-wide">SIMULATED 24x7 MONITORING</span>
         </div>
 
         {/* Critical Alerts Banner */}
         {criticalAlertCount > 0 ? (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-red-950/70 border border-red-600/80 text-red-300 animate-pulse-critical">
+          <div
+            onClick={() => onNavigate && onNavigate('/alerts')}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-red-950/70 border border-red-600/80 text-red-300 animate-pulse-critical cursor-pointer"
+          >
             <Flame className="w-4 h-4 text-red-400" />
             <span className="font-bold">{criticalAlertCount} CRITICAL ALERT{criticalAlertCount > 1 ? 'S' : ''} ACTIVE</span>
           </div>
@@ -108,11 +124,11 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
 
       {/* Right Controls: Role Switcher, Notification, Profile */}
       <div className="flex items-center gap-3">
-        {/* Quick Role Switcher for Viva Demo */}
+        {/* Quick Role Switcher */}
         <div className="relative">
           <button
             onClick={() => setRoleMenuOpen(!roleMenuOpen)}
-            className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-600 text-amber-300 transition"
+            className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-600 text-amber-300 transition cursor-pointer"
             title="Switch User Role for Evaluation"
           >
             <Radio className="w-3.5 h-3.5 text-amber-400" />
@@ -122,23 +138,24 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
           </button>
 
           {roleMenuOpen && (
-            <div className="absolute right-0 mt-2 w-64 bg-slate-900 border border-slate-700 rounded-lg shadow-2xl py-2 z-50">
-              <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800">
-                Viva Quick Role Switch
+            <div className="absolute right-0 mt-2 w-72 bg-slate-900 border border-slate-700 rounded-lg shadow-2xl py-2 z-50">
+              <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800 flex items-center justify-between">
+                <span>Demo Role Switch</span>
+                <span className="text-[10px] text-amber-400 font-mono">1-Click</span>
               </div>
               {rolesList.map((r) => (
                 <button
                   key={r.role}
-                  onClick={() => {
-                    switchRoleQuick(r.role);
-                    setRoleMenuOpen(false);
-                  }}
-                  className={`w-full text-left px-3 py-2 text-xs hover:bg-slate-800 flex items-center justify-between transition ${
+                  onClick={() => handleRoleSelect(r.role, r.path)}
+                  className={`w-full text-left px-3 py-2.5 text-xs hover:bg-slate-800 flex items-center justify-between transition cursor-pointer ${
                     user?.role === r.role ? 'bg-slate-800/80 font-bold text-amber-300' : 'text-slate-300'
                   }`}
                 >
-                  <span>{r.label}</span>
-                  {user?.role === r.role && <span className="text-amber-400 text-xs">● Active</span>}
+                  <div className="flex flex-col">
+                    <span>{r.label}</span>
+                    <span className="text-[10px] text-slate-500 font-mono">→ {r.path}</span>
+                  </div>
+                  {user?.role === r.role && <span className="text-amber-400 text-xs font-bold">● Active</span>}
                 </button>
               ))}
             </div>
@@ -148,7 +165,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
         {/* Notifications Icon with Badge */}
         <button
           onClick={onOpenNotifications}
-          className="relative p-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 transition"
+          className="relative p-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 transition cursor-pointer"
           title="Alert Notifications"
         >
           <Bell className="w-4 h-4" />
@@ -166,7 +183,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
           </div>
           <div className="hidden lg:block text-left">
             <div className="text-xs font-semibold text-slate-200 leading-tight truncate max-w-[130px]">
-              {user?.name || 'Command Officer'}
+              {user?.name || 'Demo Officer'}
             </div>
             <div className="text-[10px] text-amber-400/90 font-mono">
               {user?.role || 'CONTROL_ROOM'}
@@ -174,8 +191,8 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications }) => {
           </div>
           <button
             onClick={logout}
-            className="p-1.5 rounded hover:bg-red-950/50 hover:text-red-400 text-slate-400 transition"
-            title="Sign Out"
+            className="p-1.5 rounded hover:bg-red-950/50 hover:text-red-400 text-slate-400 transition cursor-pointer"
+            title="Sign Out / Switch User"
           >
             <LogOut className="w-4 h-4" />
           </button>

@@ -60,10 +60,11 @@ export const AlertProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const fetchAlerts = async () => {
     try {
-      const data = await api.get('/alerts?status=NEW');
-      setActiveAlerts(data);
-    } catch (err) {
-      // console.warn('Could not fetch alerts');
+      const data = await api.get('/alerts');
+      const unresolved = Array.isArray(data) ? data.filter((a: Alert) => a.status !== 'RESOLVED') : [];
+      setActiveAlerts(unresolved);
+    } catch {
+      // ignore
     }
   };
 

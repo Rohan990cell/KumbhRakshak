@@ -82,7 +82,7 @@ export const PublicApp: React.FC = () => {
             <h1 className="text-base font-black text-white">KumbhRakshak Devotee App</h1>
           </div>
           <p className="text-[11px] text-blue-200 mt-1 font-medium">
-            Official Pilgrim Safety &amp; Emergency SOS Portal
+            Devotee Safety &amp; Emergency SOS Portal (Academic Demo)
           </p>
         </div>
         <div className="w-10 h-10 rounded-full bg-blue-700/60 border border-amber-400/50 flex items-center justify-center">

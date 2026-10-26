@@ -1,43 +1,46 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import type { RoleType } from '../types';
-import { ShieldAlert, Lock, Mail, ArrowRight, ShieldCheck, UserCheck, AlertTriangle } from 'lucide-react';
+import { ShieldAlert, Lock, Mail, ArrowRight, UserCheck, Sparkles, CheckCircle2 } from 'lucide-react';
 
 interface LoginProps {
-  onSuccess: () => void;
+  onSuccess: (targetPath?: string) => void;
 }
 
 export const Login: React.FC<LoginProps> = ({ onSuccess }) => {
   const { login } = useAuth();
   const [email, setEmail] = useState('control@kumbhrakshak.gov.in');
-  const [password, setPassword] = useState('Kumbh@123');
+  const [password, setPassword] = useState('');
+  const [selectedRole, setSelectedRole] = useState<RoleType>('CONTROL_ROOM');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const rolePaths: Record<RoleType, string> = {
+    CONTROL_ROOM: '/dashboard',
+    FIELD_STAFF: '/field-team',
+    EMERGENCY_SERVICES: '/emergency-services',
+    PILGRIM: '/public',
+    ADMIN: '/admin/settings',
+  };
+
+  const handleQuickRole = async (roleEmail: string, role: RoleType, targetPath: string) => {
+    setEmail(roleEmail);
+    setSelectedRole(role);
     setLoading(true);
-    setError(null);
     try {
-      await login(email, password);
-      onSuccess();
-    } catch (err: any) {
-      setError(err.message || 'Invalid credentials');
+      await login(roleEmail);
+      onSuccess(targetPath);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleQuickRole = async (roleEmail: string) => {
-    setEmail(roleEmail);
-    setPassword('Kumbh@123');
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLoading(true);
-    setError(null);
     try {
-      await login(roleEmail, 'Kumbh@123');
-      onSuccess();
-    } catch (err: any) {
-      setError(err.message || 'Login failed');
+      await login(email);
+      const targetPath = rolePaths[selectedRole] || '/dashboard';
+      onSuccess(targetPath);
     } finally {
       setLoading(false);
     }
@@ -45,39 +48,36 @@ export const Login: React.FC<LoginProps> = ({ onSuccess }) => {
 
   const demoRoles = [
     {
-      role: 'CONTROL_ROOM',
+      role: 'CONTROL_ROOM' as RoleType,
       email: 'control@kumbhrakshak.gov.in',
       name: 'Command Center Authority',
       desc: 'Central operations, alert dispatch, all sectors',
       color: 'border-blue-600/60 bg-blue-950/30 hover:bg-blue-900/50 text-blue-300',
+      targetPath: '/dashboard',
     },
     {
-      role: 'FIELD_STAFF',
+      role: 'FIELD_STAFF' as RoleType,
       email: 'field@kumbhrakshak.gov.in',
       name: 'Sector 1 Magistrate / Inspector',
       desc: 'Ground patrol, alert acknowledge & response',
       color: 'border-emerald-600/60 bg-emerald-950/30 hover:bg-emerald-900/50 text-emerald-300',
+      targetPath: '/field-team',
     },
     {
-      role: 'EMERGENCY_SERVICES',
+      role: 'EMERGENCY_SERVICES' as RoleType,
       email: 'emergency@kumbhrakshak.gov.in',
       name: '108 Ambulance / Police Unit',
       desc: 'Dispatch triage & incident resolution',
       color: 'border-red-600/60 bg-red-950/30 hover:bg-red-900/50 text-red-300',
+      targetPath: '/emergency-services',
     },
     {
-      role: 'PILGRIM',
+      role: 'PILGRIM' as RoleType,
       email: 'pilgrim@kumbhrakshak.gov.in',
       name: 'Devotee / Citizen Public App',
       desc: 'Live crowd status, safe ghats & SOS reporting',
       color: 'border-amber-600/60 bg-amber-950/30 hover:bg-amber-900/50 text-amber-300',
-    },
-    {
-      role: 'ADMIN',
-      email: 'admin@kumbhrakshak.gov.in',
-      name: 'System Administrator',
-      desc: 'IoT sensors, CCTV calibration, audit logs',
-      color: 'border-purple-600/60 bg-purple-950/30 hover:bg-purple-900/50 text-purple-300',
+      targetPath: '/public',
     },
   ];
 
@@ -103,7 +103,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess }) => {
             </div>
 
             <h3 className="text-lg font-bold text-slate-100 mb-2">
-              Kumbh Mela Management & Emergency Alert System
+              Kumbh Mela Emergency Alert System
             </h3>
             <p className="text-xs text-slate-300 leading-relaxed mb-4">
               Integrated real-time command, crowd density AI risk prediction, automated multi-channel emergency alert dissemination, and coordinated first-responder dispatch.
@@ -112,7 +112,7 @@ export const Login: React.FC<LoginProps> = ({ onSuccess }) => {
             <div className="space-y-2 text-xs text-slate-300 pt-2 border-t border-slate-700/60">
               <div className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                <span>Real-Time CCTV & Sensor Stream</span>
+                <span>Simulated CCTV & Sensor Stream</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
@@ -126,9 +126,9 @@ export const Login: React.FC<LoginProps> = ({ onSuccess }) => {
           </div>
 
           <div className="pt-6 text-[11px] text-slate-400 font-mono">
-            College PBL Project • CS & Design
+            College Project Prototype • Academic Demonstration
             <br />
-            Prayagraj Mahakumbh Safe Corridor
+            Prayagraj Mahakumbh Simulation Corridor
           </div>
         </div>
 
@@ -138,49 +138,47 @@ export const Login: React.FC<LoginProps> = ({ onSuccess }) => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <UserCheck className="w-4 h-4 text-blue-400" />
-                Select Role or Sign In
+                Select Role to Enter
               </h3>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
-                PWD: Kumbh@123
+              <span className="text-[11px] font-bold font-mono px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/50 flex items-center gap-1.5 shadow-sm">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                DEMO MODE — College Prototype
               </span>
             </div>
 
-            {error && (
-              <div className="p-3 mb-4 rounded-lg bg-red-950/70 border border-red-600/70 text-xs text-red-200 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
-                <span>{error}</span>
-              </div>
-            )}
-
-            {/* Quick Viva Role Selector Buttons */}
+            {/* Quick 1-Click Role Login Buttons */}
             <div className="mb-5 space-y-2">
-              <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                1-Click Role Login for Demonstration:
+              <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                <span>1-Click Role Access (No Password Required):</span>
+                <span className="text-[10px] text-emerald-400 font-mono">Instant Open</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {demoRoles.slice(0, 4).map((d) => (
+                {demoRoles.map((d) => (
                   <button
                     key={d.role}
                     type="button"
-                    onClick={() => handleQuickRole(d.email)}
+                    onClick={() => handleQuickRole(d.email, d.role, d.targetPath)}
                     disabled={loading}
-                    className={`p-2.5 rounded-lg border text-left transition flex flex-col justify-between ${d.color}`}
+                    className={`p-3 rounded-lg border text-left transition flex flex-col justify-between shadow-sm hover:scale-[1.02] active:scale-[0.99] cursor-pointer ${d.color}`}
                   >
                     <div className="font-bold text-xs flex items-center justify-between">
                       <span>{d.name}</span>
-                      <ArrowRight className="w-3 h-3 opacity-70" />
+                      <ArrowRight className="w-3.5 h-3.5 opacity-80" />
                     </div>
-                    <div className="text-[10px] opacity-80 mt-0.5 truncate">{d.desc}</div>
+                    <div className="text-[10px] opacity-80 mt-1 line-clamp-2 leading-tight">{d.desc}</div>
+                    <div className="text-[9px] font-mono mt-1.5 text-amber-300/90">
+                      → Opens {d.targetPath}
+                    </div>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Manual Form */}
+            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-3 pt-3 border-t border-slate-800">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Official Email Address
+                  Role Email (Optional)
                 </label>
                 <div className="relative">
                   <Mail className="w-4 h-4 absolute left-3 top-2.5 text-slate-500" />
@@ -188,23 +186,24 @@ export const Login: React.FC<LoginProps> = ({ onSuccess }) => {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="w-full pl-9 pr-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                    className="w-full pl-9 pr-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 font-mono"
                     placeholder="officer@kumbhrakshak.gov.in"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Password <span className="text-slate-500 font-normal">(Not required in Demo Mode)</span>
+                </label>
                 <div className="relative">
                   <Lock className="w-4 h-4 absolute left-3 top-2.5 text-slate-500" />
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    required
                     className="w-full pl-9 pr-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                    placeholder="Bypassed in demo mode"
                   />
                 </div>
               </div>
@@ -212,16 +211,17 @@ export const Login: React.FC<LoginProps> = ({ onSuccess }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-2.5 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 mt-2"
+                className="w-full py-2.5 px-4 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 mt-2 cursor-pointer"
               >
-                {loading ? 'Authenticating...' : 'Enter Command Portal'}
+                {loading ? 'Entering Portal...' : 'Enter Command Portal (Demo)'}
                 <ArrowRight className="w-4 h-4" />
               </button>
             </form>
           </div>
 
-          <div className="text-[11px] text-slate-500 text-center mt-4">
-            Protected Government Emergency Management System • All Actions Logged
+          <div className="text-[11px] text-slate-400 text-center mt-4 border-t border-slate-800/80 pt-2 flex items-center justify-center gap-2">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Academic Demonstration Prototype • All Data Simulated</span>
           </div>
         </div>
       </div>

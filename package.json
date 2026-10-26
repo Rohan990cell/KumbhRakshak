@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "KumbhRakshak - Kumbh Mela Management & Emergency Alert System (College PBL Project)",
   "scripts": {
+    "build": "npm run build --prefix frontend",
     "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue,green\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "dev:backend": "npm run dev --prefix backend",
     "dev:frontend": "npm run dev --prefix frontend",
